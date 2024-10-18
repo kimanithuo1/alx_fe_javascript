@@ -11,7 +11,19 @@ let quotes = [
     const randomQuote = quotes[randomIndex];
     const quoteDisplay = document.getElementById("quoteDisplay");
   
-    quoteDisplay.innerHTML = `<p>${randomQuote.text}</p><p><em>Category: ${randomQuote.category}</em></p>`;
+    // Clear previous content
+    quoteDisplay.innerHTML = '';
+  
+    // Create elements dynamically
+    const quoteTextElement = document.createElement('p');
+    quoteTextElement.textContent = randomQuote.text;
+  
+    const quoteCategoryElement = document.createElement('p');
+    quoteCategoryElement.innerHTML = `<em>Category: ${randomQuote.category}</em>`;
+  
+    // Append new elements to the quoteDisplay div
+    quoteDisplay.appendChild(quoteTextElement);
+    quoteDisplay.appendChild(quoteCategoryElement);
   }
   
   // Add event listener for the "Show New Quote" button
@@ -25,7 +37,14 @@ let quotes = [
     if (quoteText && quoteCategory) {
       const newQuote = { text: quoteText, category: quoteCategory };
       quotes.push(newQuote);
+      
+      // Dynamically create a new list item (for example, you can list added quotes)
+      const newQuoteDisplay = document.createElement('p');
+      newQuoteDisplay.textContent = `New Quote: "${newQuote.text}" - Category: ${newQuote.category}`;
+      document.body.appendChild(newQuoteDisplay);
+  
       alert("Quote added successfully!");
+      
       // Clear input fields after adding the quote
       document.getElementById("newQuoteText").value = '';
       document.getElementById("newQuoteCategory").value = '';

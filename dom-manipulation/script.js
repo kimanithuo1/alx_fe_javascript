@@ -86,49 +86,45 @@ window.onload = function() {
 const mockApiUrl = "https://jsonplaceholder.typicode.com/posts";
 
 // Simulate fetching quotes from server
-function fetchQuotesFromServer() {
-    return fetch(mockApiUrl)
-        .then(response => response.json())
-        .then(data => {
-            // Transform data to match quote format
-            return data.map(item => ({
-                text: item.title, // Example transformation
-                category: "General" // Assign a default category
-            }));
-        });
+async function fetchQuotesFromServer() {
+    const response = await fetch(mockApiUrl);
+    const data = await response.json();
+    // Transform data to match quote format
+    return data.map(item => ({
+        text: item.title, // Example transformation
+        category: "General" // Assign a default category
+    }));
 }
 
 // Simulate posting updated quotes to server
-function syncQuotesToServer(updatedQuotes) {
-    return fetch(mockApiUrl, {
+async function syncQuotesToServer(updatedQuotes) {
+    const response = await fetch(mockApiUrl, {
         method: 'POST',
         body: JSON.stringify(updatedQuotes),
         headers: {
             'Content-Type': 'application/json'
         }
-    })
-    .then(response => response.json());
+    });
+    return await response.json();
 }
 
 // Sync data with server and resolve conflicts
-function syncWithServer() {
-    fetchQuotesFromServer().then(serverData => {
-        const localData = JSON.parse(localStorage.getItem('quotes')) || [];
-        
-        const mergedData = mergeQuotes(localData, serverData);
-        
-        // Update local storage
-        localStorage.setItem('quotes', JSON.stringify(mergedData));
-        saveQuotes();
+async function syncWithServer() {
+    const serverData = await fetchQuotesFromServer();
+    const localData = JSON.parse(localStorage.getItem('quotes')) || [];
+    
+    const mergedData = mergeQuotes(localData, serverData);
+    
+    // Update local storage
+    localStorage.setItem('quotes', JSON.stringify(mergedData));
+    saveQuotes();
 
-        // Notify user of updates
-        alert("Quotes synced with server!");
-        
-        // Sync the updated quotes back to the server
-        syncQuotesToServer(mergedData).then((message) => {
-            console.log("Data posted to server:", message);
-        });
-    });
+    // Notify user of updates
+    alert("Quotes synced with server!");
+    
+    // Sync the updated quotes back to the server
+    const message = await syncQuotesToServer(mergedData);
+    console.log("Data posted to server:", message);
 }
 
 // Merge local and server quotes
